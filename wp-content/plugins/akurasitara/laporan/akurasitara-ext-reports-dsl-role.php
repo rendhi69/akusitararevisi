@@ -3131,79 +3131,6 @@ class AkurasiTara_Ext_Reports_DSL {
             });
             calcSlovin();
 
-            // VALIDASI FORMULA REAL-TIME (AJAX DEBOUNCE)
-            var valTimers = {};
-            function validateFormula(inp){
-                if(!inp) return;
-                var wrap = inp.closest(".at-formula-field-wrap") || inp.parentNode;
-                var badge = wrap.querySelector(".at-formula-val-badge");
-                if(!badge){
-                    badge = document.createElement("div");
-                    badge.className = "at-formula-val-badge";
-                    wrap.appendChild(badge);
-                }
-                var val = inp.value.trim();
-                if(!val){
-                    badge.className = "at-formula-val-badge";
-                    badge.innerHTML = "";
-                    return;
-                }
-
-                badge.className = "at-formula-val-badge is-checking";
-                badge.innerHTML = "⏳ Memvalidasi rumus...";
-
-                var inpId = inp.name || (Math.random().toString());
-                if(valTimers[inpId]) clearTimeout(valTimers[inpId]);
-
-                valTimers[inpId] = setTimeout(function(){
-                    var fd = new FormData();
-                    fd.append("action", "akurasitara_validate_dsl_formula");
-                    fd.append("nonce", nonce);
-                    fd.append("formula", val);
-                    fetch(ajaxUrl, { method: "POST", body: fd })
-                        .then(function(r){ return r.json(); })
-                        .then(function(res){
-                            if(res && res.valid){
-                                badge.className = "at-formula-val-badge is-valid";
-                                var txt = "✅ Formula Valid";
-                                if(res.sample_val !== undefined && res.sample_val !== null){
-                                    txt += " (Simulasi: " + res.sample_val + ")";
-                                }
-                                badge.innerHTML = txt;
-                            } else {
-                                badge.className = "at-formula-val-badge is-invalid";
-                                badge.innerHTML = "❌ " + (res && res.message ? res.message : "Sintaks formula tidak valid");
-                            }
-                        })
-                        .catch(function(){
-                            badge.className = "at-formula-val-badge is-invalid";
-                            badge.innerHTML = "❌ Gagal memvalidasi";
-                        });
-                }, 350);
-            }
-
-            function validateAllFormulas(){
-                var inps = document.querySelectorAll(".at-dsl-formula-inp");
-                inps.forEach(function(inp){ validateFormula(inp); });
-            }
-
-            document.addEventListener("input", function(e){
-                if(e.target && e.target.classList.contains("at-dsl-formula-inp")){
-                    validateFormula(e.target);
-                }
-            });
-
-            var targetPopInp = document.getElementById("at_target_population_inp");
-            if(targetPopInp){
-                targetPopInp.addEventListener("input", function(){
-                    var popEl = document.getElementById("at_pop_n");
-                    if(popEl){
-                        popEl.value = targetPopInp.value;
-                        calcSlovin();
-                    }
-                });
-            }
-
             document.addEventListener("focusin", function(e){
                 if(e.target && e.target.classList.contains("at-dsl-formula-inp")) activeFormulaInp = e.target;
             });
@@ -3234,89 +3161,6 @@ class AkurasiTara_Ext_Reports_DSL {
                 var refTarget = "<?php echo esc_js($first_ref_code); ?>";
                 var refTitle = "<?php echo esc_js($first_ref_title); ?>";
 
-                // ✨ MUAT TEMPLATE FORMULA IKU 1 DINAMIS (MODULAR POIN A - F & PERSENTASE)
-                var loadIku1Btn = t.closest("#at_load_iku1_template_btn");
-                if(loadIku1Btn){
-                    var countTbody = document.getElementById("at_dsl_count_tbody");
-                    var pctTbody = document.getElementById("at_dsl_pct_tbody");
-                    if(!countTbody || !pctTbody) return;
-
-                    countTbody.innerHTML = "";
-                    pctTbody.innerHTML = "";
-
-                    var modularItems = [
-                        {
-                            title: "Jumlah Responden Terkumpul (COUNT)",
-                            formula: "COUNT()",
-                            show: true
-                        },
-                        {
-                            title: "Poin a: Bekerja/Wirausaha/Studi Lanjut (Kriteria Umum)",
-                            formula: "IF(STATUS==5 && MASA_TUNGGU>0, IF(GAJI > 1.2*UMP, IF(MASA_TUNGGU < 6, 1, 0.8), 0.6), 0)",
-                            show: true
-                        },
-                        {
-                            title: "Poin b: Lulus Langsung Bekerja (Tercakup Masa Tunggu & Gaji)",
-                            formula: "IF(STATUS==5 && MASA_TUNGGU>0, IF(MASA_TUNGGU < 6 && GAJI > 1.2*UMP, 1, IF(MASA_TUNGGU <= 12 && GAJI > 1.2*UMP, 0.8, IF(MASA_TUNGGU <= 12 && GAJI <= 1.2*UMP, 0.6, 0))), 0)",
-                            show: true
-                        },
-                        {
-                            title: "Poin c: Berwirausaha Mandiri / Rintisan",
-                            formula: "IF(STATUS==3 && MASA_TUNGGU>0, IF(GAJI > 1.2*UMP, IF(MASA_TUNGGU < 6, 1.2, 1), IF(MASA_TUNGGU < 6, 0.8, 0.6)), 0)",
-                            show: true
-                        },
-                        {
-                            title: "Poin d: Melanjutkan Studi ke Jenjang Lebih Tinggi",
-                            formula: "IF(STATUS==2, 0.6, 0)",
-                            show: true
-                        },
-                        {
-                            title: "Poin e: Bekerja Sebelum Lulus Kuliah (Masa Tunggu 0)",
-                            formula: "IF(STATUS==5 && MASA_TUNGGU==0, IF(GAJI > 1.2*UMP, 1, 0.6), 0)",
-                            show: true
-                        },
-                        {
-                            title: "Poin f: Berwirausaha Sebelum Lulus Kuliah (Masa Tunggu 0)",
-                            formula: "IF(STATUS==3 && MASA_TUNGGU==0, IF(GAJI > 1.2*UMP, 1, 0.6), 0)",
-                            show: true
-                        }
-                    ];
-
-                    modularItems.forEach(function(item, idx){
-                        var tr = document.createElement("tr"); tr.className = "at-dsl-sec-row";
-                        tr.innerHTML = '<td><input type="text" name="sections[c_' + idx + '][title]" value="' + item.title.replace(/"/g, '&quot;') + '" required style="width:100%"></td>' +
-                                       '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[c_' + idx + '][formula]" class="at-dsl-formula-inp" value="' + item.formula.replace(/"/g, '&quot;') + '" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
-                                       '<td style="text-align:center"><label><input type="checkbox" name="sections[c_' + idx + '][show_in_table]" value="1" ' + (item.show ? 'checked' : '') + '> Ya</label></td>' +
-                                       '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
-                                       '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
-                        countTbody.appendChild(tr);
-                    });
-
-                    var pctItems = [
-                        {
-                            title: "Persentase Capaian IKU 1 (Basis Responden Terkumpul %)",
-                            formula: "=ROUND((SUM(" + refTarget + ") / COUNT()) * 100, 2)"
-                        },
-                        {
-                            title: "Persentase Capaian IKU 1 (Metode Sigma Kemendikbudristek %)",
-                            formula: "=ROUND((Σ(i=1..l)(n_i*k_i)/t)*100, 2)"
-                        }
-                    ];
-
-                    pctItems.forEach(function(item, idx){
-                        var tr = document.createElement("tr"); tr.className = "at-dsl-sec-row";
-                        tr.innerHTML = '<td><input type="text" name="sections[p_' + idx + '][title]" value="' + item.title.replace(/"/g, '&quot;') + '" required style="width:100%"></td>' +
-                                       '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[p_' + idx + '][formula]" class="at-dsl-formula-inp" value="' + item.formula.replace(/"/g, '&quot;') + '" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
-                                       '<input type="hidden" name="sections[p_' + idx + '][show_in_table]" value="0">' +
-                                       '<td><span style="background:#f0fdf4;color:#166534;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
-                                       '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
-                        pctTbody.appendChild(tr);
-                    });
-
-                    validateAllFormulas();
-                    return;
-                }
-
                 // 1. SISIP PAKET LENGKAP IKU 1 KE 2 CRUD SEKALIGUS
                 var applyIku1Btn = t.closest("#at_apply_iku1_package_btn");
                 if(applyIku1Btn){
@@ -3329,7 +3173,7 @@ class AkurasiTara_Ext_Reports_DSL {
                     if(countTbody){
                         var tr1 = document.createElement("tr"); tr1.className = "at-dsl-sec-row";
                         tr1.innerHTML = '<td><input type="text" name="sections[c_0][title]" value="Jumlah Responden Terkumpul (Total Responden)" required style="width:100%"></td>' +
-                                        '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[c_0][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                        '<td><input type="text" name="sections[c_0][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                         '<td style="text-align:center"><label><input type="checkbox" name="sections[c_0][show_in_table]" value="1" checked> Ya</label></td>' +
                                         '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                         '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
@@ -3337,7 +3181,7 @@ class AkurasiTara_Ext_Reports_DSL {
 
                         var tr2 = document.createElement("tr"); tr2.className = "at-dsl-sec-row";
                         tr2.innerHTML = '<td><input type="text" name="sections[c_1][title]" value="Total Bobot Responden Memenuhi Syarat (' + refTarget + ' — ' + refTitle + ')" required style="width:100%"></td>' +
-                                        '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[c_1][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                        '<td><input type="text" name="sections[c_1][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                         '<td style="text-align:center"><label><input type="checkbox" name="sections[c_1][show_in_table]" value="1" checked> Ya</label></td>' +
                                         '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                         '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
@@ -3348,13 +3192,12 @@ class AkurasiTara_Ext_Reports_DSL {
                     if(pctTbody){
                         var tr3 = document.createElement("tr"); tr3.className = "at-dsl-sec-row";
                         tr3.innerHTML = '<td><input type="text" name="sections[p_0][title]" value="Persentase Capaian IKU 1 (%)" required style="width:100%"></td>' +
-                                        '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[p_0][formula]" class="at-dsl-formula-inp" value="=SUM(' + refTarget + ') / COUNT() * 100%" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                        '<td><input type="text" name="sections[p_0][formula]" class="at-dsl-formula-inp" value="=SUM(' + refTarget + ') / COUNT() * 100%" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                         '<td style="text-align:center"><label><input type="checkbox" name="sections[p_0][show_in_table]" value="1" checked> Ya</label></td>' +
                                         '<td><span style="background:#f0fdf4;color:#166534;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                         '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                         pctTbody.appendChild(tr3);
                     }
-                    validateAllFormulas();
                     return;
                 }
 
@@ -3367,7 +3210,7 @@ class AkurasiTara_Ext_Reports_DSL {
 
                     var tr1 = document.createElement("tr"); tr1.className = "at-dsl-sec-row";
                     tr1.innerHTML = '<td><input type="text" name="sections[c_0][title]" value="Jumlah Responden Terkumpul (Total Responden)" required style="width:100%"></td>' +
-                                    '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[c_0][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                    '<td><input type="text" name="sections[c_0][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                     '<td style="text-align:center"><label><input type="checkbox" name="sections[c_0][show_in_table]" value="1" checked> Ya</label></td>' +
                                     '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                     '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
@@ -3375,12 +3218,11 @@ class AkurasiTara_Ext_Reports_DSL {
 
                     var tr2 = document.createElement("tr"); tr2.className = "at-dsl-sec-row";
                     tr2.innerHTML = '<td><input type="text" name="sections[c_1][title]" value="Total Bobot Responden Memenuhi Syarat (' + refTarget + ' — ' + refTitle + ')" required style="width:100%"></td>' +
-                                    '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[c_1][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                    '<td><input type="text" name="sections[c_1][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                     '<td style="text-align:center"><label><input type="checkbox" name="sections[c_1][show_in_table]" value="1" checked> Ya</label></td>' +
                                     '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                     '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                     countTbody.appendChild(tr2);
-                    validateAllFormulas();
                     return;
                 }
 
@@ -3393,12 +3235,11 @@ class AkurasiTara_Ext_Reports_DSL {
 
                     var tr1 = document.createElement("tr"); tr1.className = "at-dsl-sec-row";
                     tr1.innerHTML = '<td><input type="text" name="sections[p_0][title]" value="Persentase Capaian IKU 1 (%)" required style="width:100%"></td>' +
-                                    '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[p_0][formula]" class="at-dsl-formula-inp" value="=SUM(' + refTarget + ') / COUNT() * 100%" required style="width:100%;font-family:monospace;font-weight:bold"><div class="at-formula-val-badge"></div></div></td>' +
+                                    '<td><input type="text" name="sections[p_0][formula]" class="at-dsl-formula-inp" value="=SUM(' + refTarget + ') / COUNT() * 100%" required style="width:100%;font-family:monospace;font-weight:bold"></td>' +
                                     '<td style="text-align:center"><label><input type="checkbox" name="sections[p_0][show_in_table]" value="1" checked> Ya</label></td>' +
                                     '<td><span style="background:#f0fdf4;color:#166534;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                     '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                     pctTbody.appendChild(tr1);
-                    validateAllFormulas();
                     return;
                 }
 
@@ -3411,12 +3252,11 @@ class AkurasiTara_Ext_Reports_DSL {
                     var uid = "c_" + Date.now() + "_" + Math.floor(Math.random()*1000);
                     var tr = document.createElement("tr"); tr.className = "at-dsl-sec-row";
                     tr.innerHTML = '<td><input type="text" name="sections[' + uid + '][title]" value="" required style="width:100%" placeholder="Nama Metrik (misal: Total Responden)"></td>' +
-                                   '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[' + uid + '][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Manual: 50 atau Rumus: COUNT()"><div class="at-formula-val-badge"></div></div></td>' +
+                                   '<td><input type="text" name="sections[' + uid + '][formula]" class="at-dsl-formula-inp" value="COUNT()" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Manual: 50 atau Rumus: COUNT()"></td>' +
                                    '<td style="text-align:center"><label><input type="checkbox" name="sections[' + uid + '][show_in_table]" value="1" checked> Ya</label></td>' +
                                    '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                    '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                     tbody.appendChild(tr);
-                    validateFormula(tr.querySelector(".at-dsl-formula-inp"));
                     return;
                 }
 
@@ -3429,12 +3269,11 @@ class AkurasiTara_Ext_Reports_DSL {
                     var uid = "p_" + Date.now() + "_" + Math.floor(Math.random()*1000);
                     var tr = document.createElement("tr"); tr.className = "at-dsl-sec-row";
                     tr.innerHTML = '<td><input type="text" name="sections[' + uid + '][title]" value="" required style="width:100%" placeholder="Nama Metrik (misal: Persentase Capaian IKU 1)"></td>' +
-                                   '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[' + uid + '][formula]" class="at-dsl-formula-inp" value="" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Manual: 85% atau Rumus: =SUM(T14)/COUNT()*100%"><div class="at-formula-val-badge"></div></div></td>' +
+                                   '<td><input type="text" name="sections[' + uid + '][formula]" class="at-dsl-formula-inp" value="" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Manual: 85% atau Rumus: =SUM(T14)/COUNT()*100%"></td>' +
                                    '<input type="hidden" name="sections[' + uid + '][show_in_table]" value="0">' +
                                    '<td><span style="background:#f0fdf4;color:#166534;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Live Sync</span></td>' +
                                    '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                     tbody.appendChild(tr);
-                    validateFormula(tr.querySelector(".at-dsl-formula-inp"));
                     return;
                 }
 
@@ -3484,12 +3323,11 @@ class AkurasiTara_Ext_Reports_DSL {
                     var idx = tbody.querySelectorAll("tr").length; var tr = document.createElement("tr"); tr.className = "at-dsl-sec-row";
                     var refTarget = "<?php echo esc_js($first_ref_code); ?>";
                     tr.innerHTML = '<td><input type="text" name="sections[' + idx + '][title]" value="Kolom Bobot ' + (idx + 1) + '" required style="width:100%" placeholder="Nama Kolom"></td>' +
-                                   '<td><div class="at-formula-field-wrap" style="position:relative"><input type="text" name="sections[' + idx + '][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Contoh: SUM(' + refTarget + ') atau IF(T2<6, 1.0, 0.6)"><div class="at-formula-val-badge"></div></div></td>' +
+                                   '<td><input type="text" name="sections[' + idx + '][formula]" class="at-dsl-formula-inp" value="SUM(' + refTarget + ')" required style="width:100%;font-family:monospace;font-weight:bold" placeholder="Contoh: SUM(' + refTarget + ') atau IF(T2<6, 1.0, 0.6)"></td>' +
                                    '<td style="text-align:center"><label><input type="checkbox" name="sections[' + idx + '][show_in_table]" value="1" checked> Ya</label></td>' +
                                    '<td><span style="background:#f0f9ff;color:#0369a1;font-weight:700;padding:4px 8px;border-radius:6px;font-size:12px">Pending</span></td>' +
                                    '<td style="text-align:right"><button type="button" class="button button-small at-del-sec-btn" style="color:#d63638">🗑️</button></td>';
                     tbody.appendChild(tr);
-                    validateFormula(tr.querySelector(".at-dsl-formula-inp"));
                     return;
                 }
 
@@ -3614,9 +3452,6 @@ class AkurasiTara_Ext_Reports_DSL {
                     return;
                 }
             });
-
-            // Jalankan validasi live untuk semua input formula yang sudah ada saat halaman dimuat
-            validateAllFormulas();
         })();
         </script>
         <?php

@@ -1,0 +1,281 @@
+/*
+ * AkurasiTara - CSS tambahan Laporan DSL.
+ * File ini sengaja dipisah agar modul laporan dapat dikembangkan
+ * tanpa mengubah CSS utama plugin AkurasiTara.
+ */
+
+/* WordPress Footer Reset & Hide - Mencegah Footer WP menutupi tombol '+ Buat Tabel Baru' dan komponen lainnya */
+#wpfooter {
+    display: none !important;
+    position: static !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+#wpbody-content {
+    padding-bottom: 60px !important;
+    float: none !important;
+}
+
+.at-card {
+    position: relative;
+    z-index: 2;
+}
+
+#at_add_ref_btn,
+.at-enable-all-btn,
+.at-disable-all-btn,
+.at-toggle-active-btn,
+.at-switch-editing-btn,
+.at-del-ref-btn,
+#at_add_count_sec_btn,
+#at_add_pct_sec_btn,
+#at_save_ref_btn,
+#at_add_manual_row_btn,
+#at_import_q_choices_btn,
+#at_apply_bulk_val_btn {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.akurasitara-report-note {
+    margin: 12px 0;
+}
+
+.akurasitara-report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.akurasitara-report-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+#at-create-report-modal,
+#at-formula-help-modal {
+    box-sizing: border-box;
+}
+
+#at-create-report-modal *,
+#at-formula-help-modal * {
+    box-sizing: border-box;
+}
+
+/* Enhancements untuk Template Presets & UI Laporan DSL */
+#at_dsl_preset_select {
+    border-color: #8c8f94;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 13px;
+    padding: 2px 6px;
+}
+
+#at_dsl_preset_select optgroup {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+#at_save_custom_dsl_btn {
+    background: #f6f7f7;
+    border-color: #2271b1;
+    color: #2271b1;
+    transition: all 0.15s ease-in-out;
+}
+
+#at_save_custom_dsl_btn:hover {
+    background: #2271b1;
+    color: #fff;
+}
+
+.at-saved-preset-badge {
+    display: inline-block;
+    background: #e7f5ea;
+    color: #137cbd;
+    border: 1px solid #b7e1cd;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+}
+
+/* Styling Hasil Perhitungan Laporan DSL */
+.at-result-summary-card {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0 24px 0;
+    max-width: 1100px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.at-result-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(34, 113, 177, 0.25);
+}
+
+.at-result-hero-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.at-result-hero-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+.at-result-hero-value {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 4px;
+    letter-spacing: -0.5px;
+}
+
+.at-result-hero-actions .button-export {
+    background: #ffffff !important;
+    color: #2271b1 !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 8px 18px !important;
+    height: auto !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.at-result-hero-actions .button-export:hover {
+    background: #f0f6fc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.at-result-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.at-result-info-item {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.at-result-info-item-label {
+    font-size: 11px;
+    color: #646970;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.at-result-info-item-val {
+    font-size: 14px;
+    color: #1d2327;
+    font-weight: 500;
+}
+
+.at-result-control-bar {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    max-width: 1100px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.at-explanation-box {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 12px 0 16px 0;
+    max-width: 1100px;
+    font-size: 14px;
+}
+
+.at-explanation-total-box {
+    background: #edfaef;
+    border-left: 4px solid #00a32a;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin-top: 14px;
+    max-width: 1100px;
+    font-size: 14px;
+}
+
+.at-table-styled {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #c3c4c7;
+}
+
+.at-table-styled th {
+    background: #f6f7f7 !important;
+    font-weight: 600 !important;
+    color: #1d2327 !important;
+}
+
+.at-table-styled tr:hover td {
+    background-color: #f0f6fc !important;
+}
+
+.at-code-pill {
+    background: #f0f0f1;
+    color: #1d2327;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    border: 1px solid #dcdcde;
+}
+
+
+/* Multi-Tabel / Modular Dashboard Styling */
+.at-section-builder-card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.at-section-builder-card:hover {
+    border-color: #94a3b8 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.at-sec-num {
+    background: #2271b1;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 11px;
+    margin-left: 2px;
+}

@@ -1,0 +1,361 @@
+/*
+ * AkurasiTara - CSS tambahan Laporan DSL.
+ * File ini sengaja dipisah agar modul laporan dapat dikembangkan
+ * tanpa mengubah CSS utama plugin AkurasiTara.
+ */
+
+.akurasitara-report-note {
+    margin: 12px 0;
+}
+
+.akurasitara-report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.akurasitara-report-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+#at-create-report-modal,
+#at-formula-help-modal {
+    box-sizing: border-box;
+}
+
+#at-create-report-modal *,
+#at-formula-help-modal * {
+    box-sizing: border-box;
+}
+
+/* Enhancements untuk Template Presets & UI Laporan DSL */
+#at_dsl_preset_select {
+    border-color: #8c8f94;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 13px;
+    padding: 2px 6px;
+}
+
+#at_dsl_preset_select optgroup {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+#at_save_custom_dsl_btn {
+    background: #f6f7f7;
+    border-color: #2271b1;
+    color: #2271b1;
+    transition: all 0.15s ease-in-out;
+}
+
+#at_save_custom_dsl_btn:hover {
+    background: #2271b1;
+    color: #fff;
+}
+
+.at-saved-preset-badge {
+    display: inline-block;
+    background: #e7f5ea;
+    color: #137cbd;
+    border: 1px solid #b7e1cd;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+}
+
+/* Styling Hasil Perhitungan Laporan DSL */
+.at-result-summary-card {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0 24px 0;
+    max-width: 1100px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.at-result-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(34, 113, 177, 0.25);
+}
+
+.at-result-hero-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.at-result-hero-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+.at-result-hero-value {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 4px;
+    letter-spacing: -0.5px;
+}
+
+.at-result-hero-actions .button-export {
+    background: #ffffff !important;
+    color: #2271b1 !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 8px 18px !important;
+    height: auto !important;
+    font-size: 14px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.at-result-hero-actions .button-export:hover {
+    background: #f0f6fc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.at-result-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.at-result-info-item {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+.at-result-info-item-label {
+    font-size: 11px;
+    color: #646970;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.at-result-info-item-val {
+    font-size: 14px;
+    color: #1d2327;
+    font-weight: 500;
+}
+
+.at-result-control-bar {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    max-width: 1100px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.at-explanation-box {
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 12px 0 16px 0;
+    max-width: 1100px;
+    font-size: 14px;
+}
+
+.at-explanation-total-box {
+    background: #edfaef;
+    border-left: 4px solid #00a32a;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin-top: 14px;
+    max-width: 1100px;
+    font-size: 14px;
+}
+
+.at-table-styled {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #c3c4c7;
+}
+
+.at-table-styled th {
+    background: #f6f7f7 !important;
+    font-weight: 600 !important;
+    color: #1d2327 !important;
+}
+
+.at-table-styled tr:hover td {
+    background-color: #f0f6fc !important;
+}
+
+.at-code-pill {
+    background: #f0f0f1;
+    color: #1d2327;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    border: 1px solid #dcdcde;
+}
+
+
+/* Multi-Tabel / Modular Dashboard Styling */
+.at-section-builder-card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.at-section-builder-card:hover {
+    border-color: #94a3b8 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.at-sec-num {
+    background: #2271b1;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 11px;
+    margin-left: 2px;
+}
+
+/* Real-Time Formula Validation Badges */
+.at-formula-val-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.at-formula-val-badge.is-valid {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.at-formula-val-badge.is-invalid {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.at-formula-val-badge.is-checking {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* KPI Overview Grid & Cards */
+.at-kpi-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.at-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.at-kpi-card--primary {
+    border-top: 4px solid #0284c7;
+}
+
+.at-kpi-card--success {
+    border-top: 4px solid #16a34a;
+    background: linear-gradient(to bottom, #f0fdf4, #ffffff);
+}
+
+.at-kpi-card--info {
+    border-top: 4px solid #6366f1;
+}
+
+.at-kpi-card-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.at-kpi-card-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.at-kpi-card-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+/* Accordion Audit Toggle */
+.at-accordion-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.at-accordion-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.at-accordion-btn .at-acc-icon {
+    transition: transform 0.2s ease;
+    font-size: 14px;
+}
+
+.at-accordion-btn.is-active .at-acc-icon {
+    transform: rotate(180deg);
+}
+
+.at-accordion-content {
+    transition: all 0.3s ease;
+}
